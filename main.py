@@ -21,11 +21,13 @@ upload_result = api.media_upload('vid.mp4')
 #if initial run, wait until next occurrance of 8am
 now = datetime.datetime.today()
 target = datetime.datetime(now.year, now.month, now.day, 8, 00)
-if now.hour == target.hour:
-    print("the time is now")
-    #And now loop until heat death
-    while 1:
-        api.update_status(status="", media_ids=[upload_result.media_id_string])
-        secondsInADay = 60 * 60 * 24
-        time.sleep(secondsInADay)
+if target < now:
+    target += datetime.timedelta(days=1)
+print("First operation will occur at: ", target, "   It is now: ", now)
+while 1:
+    time.sleep((target - now).total_seconds())
+    print("POSTING!")
+    api.update_status(status="", media_ids=[upload_result.media_id_string])
+    now = datetime.datetime.today()
+    target += datetime.timedelta(days=1)
 
